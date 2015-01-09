@@ -13,7 +13,7 @@
 
 </head>
 <body>
-<div id="e2d3-chart-header-area">
+<div id="e2d3-navi-header-area">
     <div id="e2d3-chart-header"></div>
 </div>
 <div id="e2d3-chart-area" class="container-fluid"></div>
@@ -67,7 +67,7 @@
                                      */
                                     var box = $('<div>').attr({id:'e2d3-chart-category-' + cat }).addClass('e2d3-chart-list-box').css('display','none');
                                     var chartUl = $('<ul>').addClass('list-inline');
-                                    $(box).append(chartUl); $('#e2d3-chart-header-area').append(box);
+                                    $(box).append(chartUl); $('#e2d3-navi-header-area').append(box);
                                     $(this.charts).each(function(){
                                         var chartIcon = $('<img>').attr({ src: 'contrib/' + cat + '/'+this+'/icon.png'}).addClass('e2d3-chart-icon');
                                         var chartA = $('<a>').attr({ href: 'chart.html#contrib/' + cat + '/' + this , 'data-e2d3-category': cat, 'data-e2d3-chart': this}).addClass("thumbnail");
@@ -107,7 +107,7 @@
                                     });
                                     
 
-                                    $('#e2d3-chart-header-area').tooltip({
+                                    $('#e2d3-navi-header-area').tooltip({
                                         placement: 'bottom',
                                         trigger: 'manual'
                                     }).show();
