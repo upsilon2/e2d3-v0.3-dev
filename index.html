@@ -61,13 +61,12 @@
                 { id: e2d3BindId, is_prompt: 1 }
                 , function (binding) {
                     console.log(binding);
-                    //e2d3.addChangeEvent(binding, e2d3Update());
+                    e2d3.addChangeEvent(binding, e2d3Update());
                     if (binding) {
                         location.href = 'chart.html';
                     } else {
                         console.log(binding);
                     }
-
                 });
         });
        

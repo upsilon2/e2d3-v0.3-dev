@@ -108,6 +108,20 @@
                     var redraw = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-redraw");
                     var select = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-select");
                     $("#e2d3-navi-header-area").after($("<div>").addClass("text-center").append([select,redraw]));
+                    $(select).on('click', function () {
+                        console.log('reselect data');
+                        e2d3.setBindData(
+                                { id: e2d3BindId, is_prompt: 1 }
+                                , function (binding) {
+                                    e2d3.addChangeEvent(binding, e2d3Update());
+                                });
+                    });
+                    $(redraw).on('click', function () {
+                        console.log('redraw data');
+                        show(e2d3BindData);
+                    });
+
+
                 } else {
                     console.log("not select");
                     var thumbBox = $("<div>").addClass("row");
