@@ -35,14 +35,13 @@
      * on load
      */
     $(document).ready(function(){
-        init();
         e2d3.initialize(function(){
             /**
              * check bind
              */
             try{
                 //console.log(e2d3BindId);
-
+                init();
                 e2d3.getBindDataById(e2d3BindId,function(e2d3BindData){
                     console.log('data is ');
                     console.log(e2d3BindData);
