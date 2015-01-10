@@ -35,6 +35,7 @@
      * on load
      */
     $(document).ready(function(){
+        init();
         e2d3.initialize(function(){
             /**
              * check bind
@@ -49,71 +50,7 @@
                         //location.href = 'index.html';
                     }else{
                         console.log('start create category');
-                        $.getJSON("charts.json", function(json){
-                            if (json) {
-                                list = json;
-                                var ul = $('<ul>').addClass('list-inline');
-                                $('#e2d3-chart-header').append(ul);
-                                $(json).each(function(){
-                                    var cat = this.name;
-                                    /**
-                                     * category list
-                                     */
-                                    var li = $('<li>');
-                                    var icon = $('<img>').addClass('e2d3-chart-category-icon').attr({ 'src': 'images/e2d3-chart-category-' + cat + '.png', 'data-e2d3-category':cat});
-                                    $(li).append(icon); $(ul).append(li);
-                                    /**
-                                     * chart list
-                                     */
-                                    var box = $('<div>').attr({id:'e2d3-chart-category-' + cat }).addClass('e2d3-chart-list-box').css('display','none');
-                                    var chartUl = $('<ul>').addClass('list-inline');
-                                    $(box).append(chartUl); $('#e2d3-navi-header-area').append(box);
-                                    $(this.charts).each(function(){
-                                        var chartIcon = $('<img>').attr({ src: 'contrib/' + cat + '/'+this+'/icon.png'}).addClass('e2d3-chart-icon');
-                                        var chartA = $('<a>').attr({ href: 'chart.html#contrib/' + cat + '/' + this , 'data-e2d3-category': cat, 'data-e2d3-chart': this}).addClass("thumbnail");
-                                        var chartLi = $('<li>');
-                                        $(chartA).append(chartIcon); $(chartLi).append(chartA); $(chartUl).append(chartLi);
-                                    });
-
-                                });
-                                /**
-                         * Load script
-                         */
-                                var hash = location.hash.split('/');
-                                console.log(hash);
-                                if (hash[0]) {
-                                    var path = 'contrib/' + hash[1] + '/' + hash[2] + '/';
-                                    $.getScript(path + 'main.js', function () {
-                                        $('<link/>', {
-                                            rel: 'stylesheet',
-                                            type: 'text/css',
-                                            href: path + 'main.css'
-                                        }).appendTo('head');
-                                        e2d3Show(e2d3BindData);
-                                    });
-                                } else {
-                                    console.log("not select");
-                                    var thumbBox = $("<div>").addClass("row");
-                                    $("#e2d3-chart-area").append(thumbBox);
-                                    $(json).each(function () {
-                                        var cat = this.name;
-
-                                        $(this.charts).each(function () {
-                                            var chartIcon = $('<img>').attr({ src: 'contrib/' + cat + '/' + this + '/icon.png' }).addClass('');
-                                            var chartA = $('<a>').attr({ href: './chart.html#contrib/' + cat + '/' + this, 'data-e2d3-category': cat, 'data-e2d3-chart': this }).addClass("thumbnail").css({"height":"90px","overflow": "hidden"});
-                                            var chartLi = $("<div>").addClass("col-xs-4 col-md-3");
-                                            $(chartA).append(chartIcon); $(chartLi).append(chartA); $(thumbBox).append(chartLi);
-                                        });
-                                    });
-                                    
-
-                                    $('#e2d3-navi-header-area').tooltip({
-                                        placement: 'bottom',
-                                        trigger: 'manual'
-                                    }).show();
-                                }
-                            }
-                        });
+                        init();
                     }
                 });
 
@@ -125,6 +62,72 @@
 
 
     });
+    function init(){
+        $.getJSON("charts.json", function(json){
+            if (json) {
+                list = json;
+                var ul = $('<ul>').addClass('list-inline');
+                $('#e2d3-chart-header').append(ul);
+                $(json).each(function(){
+                    var cat = this.name;
+                    /**
+                     * category list
+                     */
+                    var li = $('<li>');
+                    var icon = $('<img>').addClass('e2d3-chart-category-icon').attr({ 'src': 'images/e2d3-chart-category-' + cat + '.png', 'data-e2d3-category':cat});
+                    $(li).append(icon); $(ul).append(li);
+                    /**
+                     * chart list
+                     */
+                    var box = $('<div>').attr({id:'e2d3-chart-category-' + cat }).addClass('e2d3-chart-list-box').css('display','none');
+                    var chartUl = $('<ul>').addClass('list-inline');
+                    $(box).append(chartUl); $('#e2d3-navi-header-area').append(box);
+
+                    $(this.charts).each(function(){
+                        var chartIcon = $('<img>').attr({ src: 'contrib/' + cat + '/'+this+'/icon.png'}).addClass('e2d3-chart-icon');
+                        var chartA = $('<a>').attr({ href: 'chart.html#contrib/' + cat + '/' + this , 'data-e2d3-category': cat, 'data-e2d3-chart': this}).addClass("e2d3-chart-link");
+                        var chartLi = $('<li>');
+                        $(chartA).append(chartIcon); $(chartLi).append(chartA); $(chartUl).append(chartLi);
+                    });
+                });
+                /**
+                 * Load script
+                 */
+                var hash = location.hash.split('/');
+                console.log(hash);
+                if (hash[0]) {
+                    var path = 'contrib/' + hash[1] + '/' + hash[2] + '/';
+                    $.getScript(path + 'main.js', function () {
+                        $('<link/>', {
+                            rel: 'stylesheet',
+                            type: 'text/css',
+                            href: path + 'main.css'
+                        }).appendTo('head');
+                        e2d3Show(e2d3BindData);
+                    });
+                } else {
+                    console.log("not select");
+                    var thumbBox = $("<div>").addClass("row");
+                    $("#e2d3-chart-area").append(thumbBox);
+                    $(json).each(function () {
+                        var cat = this.name;
+
+                        $(this.charts).each(function () {
+                            var chartIcon = $('<img>').attr({ src: 'contrib/' + cat + '/' + this + '/icon.png' }).addClass('');
+                            var chartA = $('<a>').attr({ href: './chart.html#contrib/' + cat + '/' + this, 'data-e2d3-category': cat, 'data-e2d3-chart': this }).addClass("thumbnail e2d3-chart-link").css({"height":"90px","overflow": "hidden"});
+                            var chartLi = $("<div>").addClass("col-xs-4 col-md-3");
+                            $(chartA).append(chartIcon); $(chartLi).append(chartA); $(thumbBox).append(chartLi);
+                        });
+                    });
+
+                    $('#e2d3-navi-header-area').tooltip({
+                        placement: 'bottom',
+                        trigger: 'manual'
+                    }).show();
+                }
+            }
+        });
+    }
     /**
      * Chart selector
      */
@@ -139,13 +142,13 @@
      * Chart selector slide up
      */
     $(document).on('mouseleave','.e2d3-chart-list-box-shown',function(){
-        $(this).stop(true,false).slideUp(200);
+        $(this).stop(true,false).hide();
         $(this).removeClass('e2d3-chart-list-box-shown');
     });
     /**
      * Load script
      */
-    $(document).on('click','.e2d3-chart-list-box',function(){
+    $(document).on('click','.e2d3-chart-link',function(){
         location.reload();
     });
 </script>
