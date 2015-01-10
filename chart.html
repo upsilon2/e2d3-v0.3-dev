@@ -104,6 +104,10 @@
                         }).appendTo('head');
                         e2d3Show(e2d3BindData);
                     });
+                    //redraw
+                    var redraw = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-redraw");
+                    var select = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-select");
+                    $("#e2d3-navi-header-area").after($("<div>").addClass("text-center").append([select,redraw]));
                 } else {
                     console.log("not select");
                     var thumbBox = $("<div>").addClass("row");
