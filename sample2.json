@@ -1,0 +1,12 @@
+[
+    {
+        "path" : "contrib/map/japan/",
+        "name": "Population of states in Japan",
+        "description" : "Population of states in Japan 1935 - 2012. This statistical data is published by Japan Statistics Bureau"
+    },
+    {
+        "path" : "contrib/mix/d3-show-reel/",
+        "name" : "Big 4 portfolio",
+        "description" : "Transition of stock price about APPL, AMZN, IBM, MSFT"
+    }
+]

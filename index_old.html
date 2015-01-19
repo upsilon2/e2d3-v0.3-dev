@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title></title>
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js" type="text/javascript"></script>
+    <script src="js/core/e2d3.js" type="text/javascript"></script>
+    <script src="js/jquery/jquery.v2.min.js" type="text/javascript"></script>
+    <script src="js/jquery/jquery.e2d3.js" type="text/javascript"></script>
+    <script src="js/bs/bootstrap.v3.2.min.js" type="text/javascript"></script>
+    
+    <script src="js/lib/d3.min.js"></script>
+    <script src="js/lib/topojson.v1.6.js" type="text/javascript"></script>
+
+    <link href="css/bootstrap.v3.2.e2d3.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <style>
+        .e2d3-index-menu.demo {
+            background-color: #53b64f;
+            padding: 20px 10px;
+            font-size: 0.9em
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="e2d3-index-menu-area">
+        <ul class="">
+            <li class="col-xs-12 col-sm-6">
+                <a id="e2d3-index-select" class="e2d3-index-menu select">
+                    <i class="fa fa-bar-chart fa-3x"></i><br />
+                    Select Data
+                </a>
+            </li>
+            <li class="col-xs-12 col-sm-6">
+                <a id="e2d3-index-sample" class="e2d3-index-menu sample" href="sample.html">
+                    <i class="fa fa-table fa-3x"></i><br />
+                    Sample Data
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="row" id="e2d3-index-menu-area" style="margin-top: 20px">
+        <ul class="">
+            <li class="col-xs-6 col-xs-offset-3">
+                <a id="e2d3-index-demo" class="e2d3-index-menu demo" href="chart.html#demo">
+                    <i class="fa fa-th fa-2x"></i><br />
+                    Demo<br />
+                    <small>Use blank file</small>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="row" id="e2d3-index-recommend-area">
+        <ul class="list-inline col-xs-12">
+            <li><a><i class="fa fa-question"></i></a></li>
+            <li><a><i class="fa fa-star-half-o"></i></a></li>
+            <li><a><i class="fa fa-copyright"></i></a></li>
+        </ul>
+    </div>
+    <div id="e2d3-footer"><hr />powered by e2d3.</div>
+</div>
+    <script type="text/javascript">
+    var e2d3BindId = 'e2d3BindId';
+    var e2d3BindData;
+    e2d3.initialize(function () {
+        /**
+         * E2D3 Event
+         */
+        /**
+         * select data for index
+         */
+        $(document).on('click', '#e2d3-index-select', function () {
+            console.log('set data');
+            e2d3.setBindData(
+                { id: e2d3BindId, is_prompt: 1 }
+                , function (binding) {
+                    console.log(binding);
+                    
+                    if (binding) {
+                        //e2d3.addChangeEvent(binding, e2d3Update());
+                        location.href = 'chart.html';
+                    } else {
+                        console.log(binding);
+                    }
+                });
+        });
+       
+    });
+    </script>
+
+</body>
+</html>

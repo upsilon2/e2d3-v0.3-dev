@@ -1,19 +1,23 @@
 [
     {
-        "name" : "map",
-        "charts" : [ "japan" ]
+        "name" : "japan",
+        "description" : ""
     },
     {
-        "name" : "scatter",
-        "charts" : ["scal"]
+        "name" : "scal",
+        "description" : ""
     },
     {
-        "name" : "tree",
-        "charts" : ["treemap","sequences-sunburst"]
+        "name": "treemap",
+        "description": ""
     },
     {
-        "name" : "mix",
-        "charts" : ["d3-show-reel"]
+        "name" : "sequences-sunburst",
+        "description" : ""
+    },
+    {
+        "name" : "d3-show-reel",
+        "description" : ""
     }
 
 ]

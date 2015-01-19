@@ -221,7 +221,7 @@ var e2d3 = (function () {
                         arr.slice(1).forEach(function (d, i) {
                             //
                             var len = d.filter(function (e, k) {
-                                if (!isFinite(e) && e !== "") return true;
+                                if (!isFinite(e) && e !== "" && e.replace(/[_!"#$%&'()=~|{`@/\[\]., 　\t\r…]*/, '')) return true;
                             });
                             if (len.length > label_len) label_len = len.length;
                             if (i !== 0 && arr[i - 1][0] === d[0]) is_double = true;
@@ -464,6 +464,47 @@ var e2d3 = (function () {
             });
         }
     };
+    e2d3.dateObjecter = function (str) {
+        var y = '', m = '', d = '';
+        var month = { "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12 };
+        console.log(str);
+        if (new Date(str) != "Invalid Date") {
+            return new Date(str);
+        } else if (str.match(/[年月日]/)) {
+            //日本語の場合
+            y = (y = str.match(/[0-2][0-9][0-9][0-9]年|[0-9][0-9]年/)) ? y[0].replace(/年/, ''): '';
+            m = (m = str.match(/[0-1]?[0-9]月/)) ? m[0].replace(/月/, '') : '1';
+            d = (d = str.match(/[0-3]?[0-9]日/)) ? d[0].replace(/日/, '') : '1';
+            if (y) return new Date(y, m - 1, d);
+            
+
+        } else if (str.match(/Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec/)) {
+            y = (y = str.match(/\b[0-2][0-9][0-9][0-9]\b|\b[0-9][0-9]\b/)) ? y[0] : '';
+            m = (m = str.match(/Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec/)) ? month[m[0]] : '1';
+            d = (d = str.match(/\b[0-3]?[0-9]\b/)) ? d[0] : '1';
+            if (y) return new Date(y, m - 1, d);
+
+        } else if (str.match(/[0-2][0-9][0-9][0-9]\/[0-1]?[0-9]\/[0-3]?[0-9]/)) {
+            var day = str.split('/');
+            day.forEach(function (v, i) {
+                if (d.match(/\b[0-2][0-9][0-9][0-9]\b|\b[0-9][0-9]\b/)) {
+                    y = v;
+                } else if (d.match(/[0-1]?[0-9]/)) {
+                    m = v;
+                } else if (d.match(/\b[0-3]?[0-9]\b/)) {
+                    d = v;
+                }
+            });
+            if (!m) m = 1;
+            if (!d) d = 1;
+            if (y) return new Date(y, m - 1, d);
+
+        } else if (str.match(/\b[0-2][0-9][0-9][0-9]\b/)) {
+            y = str.match(/\b[0-2][0-9][0-9][0-9]\b/);
+            if (y) return new Date(y[0]);
+        }
+        return false;
+    }
 
     return e2d3;
 })();
@@ -497,17 +538,22 @@ function showObj(obj, s) {
 */
 function showError(message, _type) {
     console.log(message);
-    if (!_type) {
-        _type = 'info';
+    if (!_type.color) {
+        _type.color = 'info';
     }
-    var alert = $("<div>").addClass('e2d3-alert p6 alert alert-' + _type).html(message).hide();
-    $("<body>").prepend(alert);
+    var alert = $("<div>").addClass('e2d3-alert p6 alert alert-' + _type.color).html(message).hide();
+    $("#e2d3-chart-area").prepend(alert);
 
+    
     $(alert).fadeIn(400, function () {
-        $(alert).delay(2000).fadeOut(600, function () {
-            $(alert).remove();
-        });
+        if (!_type.stay) {
+            $(alert).delay(2000).fadeOut(600, function () {
+                $(alert).remove();
+            });
+        }
     });
+    
+    
 }
 
 function lookdeep(object) {
