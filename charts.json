@@ -1,23 +1,28 @@
 [
     {
-        "name" : "japan",
-        "description" : ""
+        "name" : "japan-color",
+        "title": "Japan Color",
+        "description" : "Paint any data to japanese states."
     },
     {
-        "name" : "scal",
-        "description" : ""
+        "name" : "scatterplot-matrix-brushing",
+        "title": "Scatterplot Matrix Brushing",
+        "description" : "This example uses Anderson's data of iris flowers on the Gaspé Peninsula. Scatterplot matrix design invented by J. A. Hartigan"
     },
     {
         "name": "treemap",
-        "description": ""
+        "title": "Zoomable Treemap",
+        "description": "In information visualization and computing, treemapping is a method for displaying hierarchical data by using nested rectangles."
     },
     {
         "name" : "sequences-sunburst",
-        "description" : ""
+        "title": "Sequences Sunburst",
+        "description" : "A ring chart, also known as a sunburst chart or a multilevel pie chart, is used to visualize hierarchical data, depicted by concentric circles."
     },
     {
         "name" : "d3-show-reel",
-        "description" : ""
+        "title": "D3 Show Reel",
+        "description" : "Visualize a data to multiple chart by animation."
     }
 
 ]
