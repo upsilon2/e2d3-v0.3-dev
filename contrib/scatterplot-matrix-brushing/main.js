@@ -26,8 +26,7 @@ var color = d3.scale.category10();
 function e2d3Show(){
     e2d3.bind2Json(setBindId, { dimension: '2d' }, show);
 }
-function e2d3Update(){
-
+function e2d3Update(responce){
 }
 
 function show(data) {

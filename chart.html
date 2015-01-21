@@ -17,7 +17,7 @@
     <div id="e2d3-chart-header"></div>
 </div>
 <div id="e2d3-global-navi">
-    <a href="index.html"><i class="fa fa-2x fa-home e2d3-dropdown" data-toggle="dropdown" data-placement="bottom" title="Settings"></i></a>
+    <a href="index.html" style="color: #FFFFFF"><i class="fa fa-2x fa-home" title="Settings"></i></a>
 </div>
 <div id="e2d3-chart-area" class="container-fluid"></div>
 <div id="e2d3-footer"><hr />Powered by E2D3.</div>
@@ -37,7 +37,7 @@
     /**
      * on load
      */
-         init();
+//         init();
     $(document).ready(function(){
         e2d3.initialize(function(){
             /**
@@ -91,7 +91,8 @@
                                             { id: e2d3BindId, is_prompt: 0 }
                                             , function (binding) {
                                                 if (binding) {
-                                                    e2d3GetMainScript(baseUrl);
+
+                                                    e2d3GetMainScript(baseUrl,binding);
                                                 }
                                             });
                                 }
@@ -99,18 +100,18 @@
                         });
                     });
                 } else {
-                    e2d3GetMainScript(baseUrl);
-//                    e2d3.json2Excel(data, function (result) {
-//                        if (result) {
-//                            e2d3.setBindData(
-//                                    { id: e2d3BindId, is_prompt: 0 }
-//                                    , function (binding) {
-//                                        if (binding) {
-//                                            e2d3GetMainScript(baseUrl);
-//                                        }
-//                                    });
-//                        }
-//                    });
+                    e2d3.json2Excel(data, function (result) {
+                        if (result) {
+                            e2d3.setBindData(
+                                    { id: e2d3BindId, is_prompt: 0 }
+                                    , function (binding) {
+                                        if (binding) {
+                                            e2d3GetMainScript(baseUrl,binding);
+
+                                        }
+                                    });
+                        }
+                    });
                 }
             });
 
@@ -123,7 +124,7 @@
                 e2d3.setBindData(
                         { id: e2d3BindId, is_prompt: 1 }
                         , function (binding) {
-                            e2d3.addChangeEvent(binding, e2d3Update());
+                            e2d3.addChangeEvent(binding, e2d3Update);
                         });
             });
             $(redraw).on('click', function () {
@@ -136,20 +137,18 @@
         }
         //home 
 
-        $(document).on('click', ".e2d3-link-index-reset", function () {
-            location.href = "index.html#demo";
-        });
     }
 
     //
-    function e2d3GetMainScript(baseUrl) {
+    function e2d3GetMainScript(baseUrl,binding) {
         $.getScript(baseUrl + '/main.js', function () {
             $('<link/>', {
                 rel: 'stylesheet',
                 type: 'text/css',
                 href: baseUrl + '/main.css'
             }).appendTo('head');
-            //e2d3Show();
+
+            e2d3Show();
         });
     }
 

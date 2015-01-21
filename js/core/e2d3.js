@@ -105,15 +105,33 @@ var e2d3 = (function () {
     * add change method
     */
     e2d3.addChangeEvent = function (binding, _callback) {
-        binding.addHandlerAsync(Office.EventType.BindingDataChanged, function (result) { 
-            var response;
-            if (result.binding.id) {
-                response = true;
-            } else {
-                response = false;
-            }
-            if (_callback) _callback(response);
-        });
+        if(typeof binding == 'string'){
+            self.getBindDataById(binding,function(result){
+                result.value.addHandlerAsync(Office.EventType.BindingDataChanged, function (result) {
+                    var response;
+                    if (result.binding.id) {
+                        response = true;
+                    } else {
+                        showError("error",{color: "info"});
+                        response = false;
+                    }
+                    if (_callback) _callback(response);
+                });
+            });
+        } else {
+            binding.addHandlerAsync(Office.EventType.BindingDataChanged, function (result) {
+                var response;
+                if (result.binding.id) {
+                    response = true;
+                } else {
+                    showError("error2",{color: "info"});
+                    response = false;
+                }
+                if (_callback) _callback(response);
+            });
+        }
+
+
     };
     /**
     * Excel To Json
@@ -291,7 +309,7 @@ var e2d3 = (function () {
                 });
             } else {
                 if (result.error) {
-                    showError('bind2Json Error: ' + result.error.name + ':' + result.error.message, 'danger');
+                    showError('bind2Json Error: ' + result.error.name + ':' + result.error.message, {color: "danger"});
                 }
                 callback(false);
             }
@@ -547,7 +565,7 @@ function showError(message, _type) {
     
     $(alert).fadeIn(400, function () {
         if (!_type.stay) {
-            $(alert).delay(2000).fadeOut(600, function () {
+            $(alert).delay(4000).fadeOut(600, function () {
                 $(alert).remove();
             });
         }

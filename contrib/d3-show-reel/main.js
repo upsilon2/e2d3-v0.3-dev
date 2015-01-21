@@ -40,7 +40,7 @@ var area = d3.svg.area()
 function e2d3Show(){
     e2d3.bind2Json(e2d3BindId, {}, show);
 }
-function e2d3Update(){
+function e2d3Update(responce){
 
 }
 
@@ -59,7 +59,7 @@ function show(data) {
     data.slice(1).forEach(function (d, i) {
         //
         var len = d.filter(function (e, k) {
-            if (!isFinite(e) && e !== "" && e.replace(/[_!"#$%&'()=~|{`@/\[\]., @\t\rc]*/, '')) return true;
+            if (!isFinite(e) && e !== "" && e.replace(/[_!"#$%&'()=~|{`@/\[\]., ï¿½@\t\rï¿½c]*/, '')) return true;
         });
         if (len.length > label_len) label_len = len.length;
     });
