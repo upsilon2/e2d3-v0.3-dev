@@ -1,38 +1,39 @@
 /**
  * Created by yuuu on 14/12/22.
  */
+
 $(document).ready(function () {
+
     var colorButtons = $('<div>').attr('id', 'chart-color-selector');
     var buttonBrue = $('<button>').addClass('btn red chart-color-selector-button').attr({
         'data-color-min': '#FEFFD1',
         'data-color-max': '#FF0000'
     });
-    var buttonRed = $('<button>').addClass('btn red chart-color-selector-button').attr({
+    var buttonRed = $('<button>').addClass('btn blue chart-color-selector-button').attr({
         'data-color-min': '#C9FDFF',
         'data-color-max': '#0000FF'
     });
-    var buttonMix = $('<button>').addClass('btn red chart-color-selector-button').attr({
+    var buttonMix = $('<button>').addClass('btn multi chart-color-selector-button').attr({
         'data-color-min': '#0000FF',
         'data-color-max': '#FF0000'
     });
     $(colorButtons).append([buttonBrue, buttonRed, buttonMix]);
     $('#e2d3-chart-area').append(colorButtons);
 });
-
+$.getScript( baseUrl + "/topojson.v1.6.js",function(){
     //on click
-    var bindSetting = { dimension: '2d' };
     var setBindId = e2d3BindId;
 
     //
-    var width = 400;
-    var height =+ 400;
+    var width = 500;
+    var height = 500;
 
     var svg = d3.select("#e2d3-chart-area").append("svg")
         .attr("width", width)
         .attr("height", height);
 
     var projection = d3.geo.mercator()
-        .center([136, 35])
+        .center([136, 38])
         .scale(1200)
         .translate([width / 2, height / 2]);
 
@@ -204,47 +205,47 @@ $(document).ready(function () {
             });
         }
     }
-    function dataUpdate(response) {
-        console.log(response);
-        if (response) {
-            e2d3.bind2Json(setBindId, { dimension: '3d' }, show);
+});
+function dataUpdate(response) {
+    console.log(response);
+    if (response) {
+        e2d3.bind2Json(setBindId, { dimension: '3d' }, show);
+    }
+}
+function makeLabels(labels, value) {
+    jQuery('#chart-labels').remove();
+    var box = jQuery('<div>').attr('id','chart-labels');
+    jQuery(labels).each(function () {
+        var label = jQuery('<label>').addClass('chart-label').attr('data-chart-label',this).html(this);
+        if (value == this) {
+            jQuery(label).addClass('active');
         }
+        jQuery(box).append(label);
+    });
+
+    if (labels) {
+        jQuery('#e2d3-chart-area').append(box).hide().fadeIn();
+    }
+}
+function color(d, values,selector) {
+    if (!selector) {
+        var colorSelector = jQuery('.chart-color-selector-button');
+        selector = colorSelector[0];
+    }
+    var min = d3.min(values);
+    var max = d3.max(values);
+    var c;
+    if (!jQuery(selector).hasClass('multi')) {
+        c = d3.scale.linear()
+            .domain([min, max])
+            .range([jQuery(selector).attr('data-color-min'), jQuery(selector).attr('data-color-max')])
+            .interpolate(d3.interpolateLab);
+    } else {
+        c = d3.scale.linear()
+            .domain([min, Math.floor((max - min) * 0.5), max])
+            .range([jQuery(selector).attr('data-color-min'), '#FEFCEA', jQuery(selector).attr('data-color-max')])
+            .interpolate(d3.interpolateLab);
     }
 
-    function makeLabels(labels, value) {
-        jQuery('#chart-labels').remove();
-        var box = jQuery('<div>').attr('id','chart-labels');
-        jQuery(labels).each(function () {
-            var label = jQuery('<label>').addClass('chart-label').attr('data-chart-label',this).html(this);
-            if (value == this) {
-                jQuery(label).addClass('active');
-            }
-            jQuery(box).append(label);
-        });
-
-        if (labels) {
-            jQuery('#chart-container').append(box).hide().fadeIn();
-        }
-    }
-    function color(d, values,selector) {
-        if (!selector) {
-            var colorSelector = jQuery('.chart-color-selector-button');
-            selector = colorSelector[0];
-        }
-        var min = d3.min(values);
-        var max = d3.max(values);
-        var c;
-        if (!jQuery(selector).hasClass('multi')) {
-            c = d3.scale.linear()
-                .domain([min, max])
-                .range([jQuery(selector).attr('data-color-min'), jQuery(selector).attr('data-color-max')])
-                .interpolate(d3.interpolateLab);
-        } else {
-            c = d3.scale.linear()
-                .domain([min, Math.floor((max - min) * 0.5), max])
-                .range([jQuery(selector).attr('data-color-min'), '#FEFCEA', jQuery(selector).attr('data-color-max')])
-                .interpolate(d3.interpolateLab);
-        }
-
-        return c(d);
-    }
+    return c(d);
+}
