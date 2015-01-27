@@ -9,27 +9,31 @@ var w = 550 - 10,
     treemap,
     svg;
 
-function e2d3Show(){
-    e2d3.bind2Json(e2d3BindId, { dimension: 'nested' }, show);
+function e2d3Show(updateFlag) {
+    if (updateFlag) {
+        e2d3.bind2Json(e2d3BindId, { dimension: "nested" }, show);
+    } else {
+        e2d3.addChangeEvent(e2d3BindId, e2d3Update, function () {
+            e2d3.bind2Json(e2d3BindId, { dimension: "nested" }, show);
+        });
+    }
+    
 }
-function e2d3Update(responce){
-
+function e2d3Update(responce) {
+    console.log("Begin e2d3Update");
+    e2d3Show(true);
 }
 
 function show(data) {
+    console.log("start show e");
+    $("#e2d3-chart-area").empty();
+
     if (!target) {
         createTargetSelector(data.targets, { value: data.targets[0], type: "dropdown" });
         target = $("#e2d3-target-selector").val();
     } else {
         createTargetSelector(data.targets, { value: target, type: "dropdown" });
     }
-    //$(document).on("change", "#e2d3-target-selector", function () {
-    //    target = $(this).val();
-    //    $("#e2d3-chart-area").empty();
-    //    console.log("changed");
-    //    //show(data);
-        
-    //});
 
     treemap = d3.layout.treemap()
     .round(false)

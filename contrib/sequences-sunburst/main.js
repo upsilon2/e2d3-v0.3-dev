@@ -12,27 +12,39 @@ var b = {
 };
 
 // Mapping of step names to colors.
-var colors = d3.scale.category20c();
+var colorScale = d3.scale.category20();
+var colors;
 var vis, partition, arc;
 
 // Total size of all segments; we set this later, after loading the data.
 var totalSize = 0;
 
-function e2d3Show(){
-    e2d3.bind2Json(e2d3BindId, { dimension: 'nested' }, show);
+function e2d3Show(updateFlag) {
+    if (updateFlag) {
+        e2d3.bind2Json(e2d3BindId, { dimension: "nested" }, show);
+    } else {
+        e2d3.addChangeEvent(e2d3BindId, e2d3Update, function () {
+            e2d3.bind2Json(e2d3BindId, { dimension: "nested" }, show);
+        });
+    }
 }
-function e2d3Update(){
-
+function e2d3Update(responce) {
+    console.log("Begin e2d3Update");
+    e2d3Show(true);
 }
 
 function show(data) {
+    console.log("start show e");
+    $("#e2d3-chart-area").empty();
+
     if (!target) {
         createTargetSelector(data.targets, { value: data.targets[0], type: "dropdown" });
         target = $("#e2d3-target-selector").val();
     } else {
         createTargetSelector(data.targets, { value: target, type: "dropdown" });
     }
-   
+    colors = [];
+
     //area
     var s_area = $("<div>").attr("id", "sequence");
     var c_area = $("<div>").attr("id", "chart").append($("<div>").attr("id", "explanation").css("visibility", "hidden").append($("<span>").attr("id", "percentage")));
@@ -46,7 +58,7 @@ function show(data) {
     });
 };
 function createVisualization(json) {
-    console.log(target);
+
     vis = d3.select("#e2d3-chart-area").append("svg:svg")
     .attr("width", width)
     .attr("height", height)
@@ -88,7 +100,7 @@ function createVisualization(json) {
         .attr("display", function (d) { return d.depth ? null : "none"; })
         .attr("d", arc)
         .attr("fill-rule", "evenodd")
-        .style("fill", function (d) { return colors(d.label); })
+        .style("fill", function (d) { colors[d.label] = colorScale(d.label); return colors[d.label]; })
         .style("opacity", 1)
         .on("mouseover", mouseover);
 
@@ -103,7 +115,7 @@ function createVisualization(json) {
 // Fade all but the current sequence, and show it in the breadcrumb trail.
 function mouseover(d) {
     var percentage = (100 * d.value / totalSize).toPrecision(3);
-    var percentageString = d.value + " [" + percentage + "%]";
+    var percentageString = d.label + " [" + percentage + "%]";
     if (percentage < 0.1) {
         percentageString = "< 0.1%";
     }
@@ -203,7 +215,7 @@ function updateBreadcrumbs(nodeArray, percentageString) {
 
     entering.append("svg:polygon")
         .attr("points", breadcrumbPoints)
-        .style("fill", function (d) { return colors[d.label]; });
+        .style("fill", function (d) { colors[d.label] = colorScale(d.label); return colors[d.label]; });
 
     entering.append("svg:text")
         .attr("x", (b.w + b.t) / 2)

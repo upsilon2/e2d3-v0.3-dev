@@ -42,12 +42,13 @@ var buttonMix = $('<button>').addClass('btn multi chart-color-selector-button').
 });
 function e2d3Show(){
 
-
+    console.log("Begin e2d3Show.");
+    jQuery('#chart-labels').remove();
     $(colorButtons).append([buttonBrue, buttonRed, buttonMix]);
     $('#e2d3-chart-area').append(colorButtons);
     $.getScript( baseUrl + "/topojson.v1.6.js",function(){
         //
-
+        //$("svg").empty();
         d3.json("json/geo/japan.topojson", function (error, o) {
             //console.log(o);
             svg.selectAll(".states")
@@ -60,15 +61,18 @@ function e2d3Show(){
                 .attr("fill","#fff")
                 .attr("d", path);
             topo = o;
-            e2d3.addChangeEvent(e2d3BindId, e2d3Update);
-            e2d3.bind2Json(e2d3BindId, { dimension: '3d' }, show);
+            e2d3.addChangeEvent(e2d3BindId, e2d3Update, function () {
+                e2d3.bind2Json(e2d3BindId, { dimension: '3d' }, show);
+            });
+            
         });
 
     });
 
 
 }
-function e2d3Update(responce){
+function e2d3Update(responce) {
+    console.log("e2d3Update :" + responce);
     dataUpdate(responce);
 }
 
@@ -86,7 +90,6 @@ function show(data) {
                 if (d[k] !== i && data_row !== 0) {
                     values.push(d[k]);
                 } else if (d[k] !== i && data_row === 0) {
-                    console.log(i + ' and ' + k + ' and ' + d[k])
                     labels.push(k);
                     values.push(d[k]);
                 }
@@ -215,7 +218,7 @@ function show(data) {
 function dataUpdate(response) {
     console.log(response);
     if (response) {
-        e2d3.bind2Json(setBindId, { dimension: '3d' }, show);
+        e2d3.bind2Json(e2d3BindId, { dimension: '3d' }, show);
     }
 }
 function makeLabels(labels, value) {

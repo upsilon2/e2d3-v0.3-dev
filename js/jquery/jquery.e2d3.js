@@ -89,5 +89,7 @@ function createTargetSelector(targets, options) {
         default:
     }
     $(box).append(group);
+    if (targets.length === 1) $(box).hide();
     $("#e2d3-chart-area").prepend(box);
+
 }

@@ -1,8 +1,13 @@
 [
     {
-        "name" : "japan-color",
+        "name": "japan-color",
         "title": "Japan Color",
-        "description" : "Paint any data to japanese states."
+        "description": "Paint any data to japanese states."
+    },
+    {
+        "name": "dot-bar-chart",
+        "title": "Dot Bar Chart",
+        "description": "The motional bar chart which is made with dots."
     },
     {
         "name" : "scatterplot-matrix-brushing",
@@ -15,9 +20,14 @@
         "description": "In information visualization and computing, treemapping is a method for displaying hierarchical data by using nested rectangles."
     },
     {
-        "name" : "sequences-sunburst",
+        "name": "sequences-sunburst",
         "title": "Sequences Sunburst",
-        "description" : "A ring chart, also known as a sunburst chart or a multilevel pie chart, is used to visualize hierarchical data, depicted by concentric circles."
+        "description": "A ring chart, also known as a sunburst chart or a multilevel pie chart, is used to visualize hierarchical data, depicted by concentric circles."
+    },
+    {
+        "name": "sankey",
+        "title": "Sankey Diagrams",
+        "description": "The motional bar chart which is made with dots."
     },
     {
         "name" : "d3-show-reel",

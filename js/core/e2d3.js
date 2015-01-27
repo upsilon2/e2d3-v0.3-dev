@@ -40,13 +40,14 @@ var e2d3 = (function () {
             set(args);
         }
         function set(a) {
-            console.log('setBindData: bindId = ' + a.id);
+            console.log('setBindData: Begin set bind:  bindId = ' + a.id);
             if (a.is_prompt) {
                 Office.context.document.bindings.addFromPromptAsync(
                 Office.BindingType.Matrix,
                 a,
                 function (result) {
                     if (result.status === Office.AsyncResultStatus.Succeeded) {
+                        console.log('setBindData: Success set bind.');
                         return callback(result.value);
                     } else {
                         if (result.error) {
@@ -61,6 +62,7 @@ var e2d3 = (function () {
                 a,
                 function (result) {
                     if (result.status === Office.AsyncResultStatus.Succeeded) {
+                        console.log('setBindData: Success set bind( not prompt mode ).');
                         return callback(result.value);
                     } else {
                         if (result.error) {
@@ -78,7 +80,7 @@ var e2d3 = (function () {
     e2d3.getBindDataById = function (id,callback) {
         Office.context.document.bindings.getByIdAsync(id, function (result) {
             if (result.status === Office.AsyncResultStatus.Succeeded) {
-                console.log('getBindDataById is success');
+                console.log('getBindDataById: Success get bind');
                 return callback(result.value);
             }else{
                 return callback(false);
@@ -104,35 +106,47 @@ var e2d3 = (function () {
     /**
     * add change method
     */
-    e2d3.addChangeEvent = function (binding, _callback) {
+    e2d3.addChangeEvent = function (binding, handler, _callback) {
+        console.log("addChangeEvent: Set change event :" + binding);
         if(typeof binding == 'string'){
-            self.getBindDataById(binding,function(result){
-                result.value.addHandlerAsync(Office.EventType.BindingDataChanged, function (result) {
-                    var response;
-                    if (result.binding.id) {
-                        response = true;
-                    } else {
-                        showError("error",{color: "info"});
-                        response = false;
-                    }
-                    if (_callback) _callback(response);
+            Office.context.document.bindings.getByIdAsync(binding, function (result) {
+                //if same name.
+                result.value.removeHandlerAsync(Office.EventType.BindingDataChanged, { handler: handler }, function (remove) {
+                    console.log("removeChangeEvent: is String mode");
+                    console.log(remove.status);
+                    result.value.addHandlerAsync(Office.EventType.BindingDataChanged, handler, function (add) {
+                        console.log("addChangeEvent : " + add.status);
+                        if (add.status == 'succeeded') {
+                            return _callback(true);
+                        } else {
+                            return _callback(false);
+                        }
+                    });
                 });
+
             });
         } else {
-            binding.addHandlerAsync(Office.EventType.BindingDataChanged, function (result) {
-                var response;
-                if (result.binding.id) {
-                    response = true;
-                } else {
-                    showError("error2",{color: "info"});
-                    response = false;
-                }
-                if (_callback) _callback(response);
+            //is same name
+            binding.removeHandlerAsync(Office.EventType.BindingDataChanged, { handler: handler }, function () {
+                binding.addHandlerAsync(Office.EventType.BindingDataChanged, handler, function (add) {
+                    if (add.status == 'succeeded') {
+                        return _callback(true);
+                    } else {
+                        return _callback(false);
+                    }
+                });
             });
         }
-
-
     };
+    e2d3.removeChangeEvent = function (bindId, handler, callback) {
+        console.log("Begin remove change event");
+        Office.context.document.bindings.getByIdAsync(bindId, function (result) {
+            //if same name.
+            result.value.removeHandlerAsync(Office.EventType.BindingDataChanged, { handler: handler }, callback);
+        });
+    }
+    
+
     /**
     * Excel To Json
     * @bindId               : [Required] target bind id.
@@ -148,6 +162,7 @@ var e2d3 = (function () {
         var valueFormtat = (args.is_formatted) ? Office.ValueFormat.Formatted :  Office.ValueFormat.Unformatted;
         
         Office.context.document.bindings.getByIdAsync(bindId, function (result) {
+            console.log(result);
             if (result.status === Office.AsyncResultStatus.Succeeded) {
                 
                 result.value.getDataAsync(
@@ -217,6 +232,7 @@ var e2d3 = (function () {
                         return callback(data);
                     } else if (args.dimension == '3d') {
                         var arr = result.value;
+                        
                         var head = arr[0];
                         var data = {};
                         arr.slice(1).forEach(function (d) {
@@ -304,6 +320,7 @@ var e2d3 = (function () {
                     }
                     else {
                         //normal array
+                        console.log("bind2Json : not dimension mode");
                         return callback(result.value);
                     }
                 });
@@ -418,6 +435,7 @@ var e2d3 = (function () {
             Office.context.document.bindings.getByIdAsync(args.id, function (resultGet) {
                 if (resultGet.status === Office.AsyncResultStatus.Succeeded) {
                     var binding = resultGet.value; // include row and col count
+
                     //Don't use removeHandlerAsync. Because "Office.EventType.BindingDataChanged" parameter is faild.
                     //remove change handler
                     //Office.select("bindings#" + args.id).removeHandlerAsync();
@@ -453,7 +471,7 @@ var e2d3 = (function () {
                 }
                 data[i] = col;
             }
-            console.log(data);
+            //console.log(data);
             Office.context.document.setSelectedDataAsync(data,
                 function (result) {
                     if (result.status === Office.AsyncResultStatus.Succeeded) {
@@ -485,7 +503,7 @@ var e2d3 = (function () {
     e2d3.dateObjecter = function (str) {
         var y = '', m = '', d = '';
         var month = { "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12 };
-        console.log(str);
+        //console.log(str);
         if (new Date(str) != "Invalid Date") {
             return new Date(str);
         } else if (str.match(/[年月日]/)) {

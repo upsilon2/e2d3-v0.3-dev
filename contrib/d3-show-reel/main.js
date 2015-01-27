@@ -1,6 +1,6 @@
-//
+
 var m = [20, 20, 30, 20],
-w = 550 - m[1] - m[3],
+w = 700 - m[1] - m[3],
 h = 400 - m[0] - m[2];
 
 var x,
@@ -9,13 +9,11 @@ var x,
     delay = 500;
 
 var color = d3.scale.category10();
-
 var svg = d3.select("#e2d3-chart-area").append("svg")
     .attr("width", w + m[1] + m[3])
     .attr("height", h + m[0] + m[2])
   .append("g")
     .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
-
 var stocks,
     symbols;
 
@@ -37,14 +35,26 @@ var area = d3.svg.area()
     .x(function (d) { return x(d.date); })
     .y1(function (d) { return y(d.price); });
 
-function e2d3Show(){
-    e2d3.bind2Json(e2d3BindId, {}, show);
-}
-function e2d3Update(responce){
+function e2d3Show(updateFlag) {
 
+    if (updateFlag) {
+        svg.selectAll("*").remove();
+        $("#e2d3-target-selector-box").remove();
+        $("#d3-show-reel-next-box").remove();
+        e2d3.bind2Json(e2d3BindId, { is_formatted: true }, show);
+    } else {
+        e2d3.addChangeEvent(e2d3BindId, e2d3Update, function () {
+            e2d3.bind2Json(e2d3BindId, { is_formatted: true }, show);
+        });
+    }
+}
+function e2d3Update(responce) {
+    console.log("Begin e2d3Update");
+    e2d3Show(true);
 }
 
 function show(data) {
+
     //header
     var head = data[0];
     var labels = [];
@@ -59,11 +69,10 @@ function show(data) {
     data.slice(1).forEach(function (d, i) {
         //
         var len = d.filter(function (e, k) {
-            if (!isFinite(e) && e !== "" && e.replace(/[_!"#$%&'()=~|{`@/\[\]., �@\t\r�c]*/, '')) return true;
+            if (!isFinite(e) && e !== "" && e.replace(/[_. ]*/, '')) return true;
         });
         if (len.length > label_len) label_len = len.length;
     });
-
     head.forEach(function (dd, k) {
         if (k < label_len) {
             labels.push(dd);
@@ -71,8 +80,10 @@ function show(data) {
             targets.push(dd);
         }
     });
+    
     var metrix = (labels.length - 1 < targets.length) ? "col" : "row";
     if (metrix === "row") {
+        console.log("Matrix is row mode");
         if (!target) {
             createTargetSelector(targets, { value: targets[0], type: "dropdown" });
             target = $("#e2d3-target-selector").val();
@@ -92,6 +103,7 @@ function show(data) {
             if(tmp.date) json.push(tmp);
         });
     } else {
+        console.log("Matrix is col mode");
         data.slice(1).forEach(function (d,i) {
             for (var j = 0; j < targets.length; j++) {
                 if (labels.length > 1) {
@@ -107,6 +119,7 @@ function show(data) {
                     tmp.symbol = d[0];
                     tmp.date = e2d3.dateObjecter(targets[j]);
                     tmp.price = d[(j + labels.length)];
+                    console.log(tmp.date);
                     if (tmp.date) json.push(tmp);
                 }
                 
@@ -135,10 +148,11 @@ function show(data) {
         .data(symbols)
       .enter().append("g")
         .attr("class", "symbol");
-
-    setTimeout(lines, duration);
+   setTimeout(lines, duration);
+    
 };
 function lines() {
+    console.log("lien");
     x = d3.time.scale().range([0, w - 60]);
     y = d3.scale.linear().range([h / 4 - 20, 0]);
     // Compute the minimum and maximum date across symbols.
@@ -184,10 +198,10 @@ function lines() {
 
     var k = 1, n = symbols[0].values.length;
     d3.timer(function () {
+        
         draw(k);
         if ((k += 2) >= n - 1) {
             draw(n - 1);
-
             setTimeout(horizons, 500);
             return true;
         }
@@ -245,8 +259,8 @@ function horizons() {
             .attr("d", area(d.values))
             .each("end", function () { d3.select(this).style("fill-opacity", null); });
     });
-
     setTimeout(areas, duration + delay);
+
 }
 function areas() {
     var g = svg.selectAll(".symbol");
@@ -448,6 +462,7 @@ function groupedBar() {
     });
 
     setTimeout(stackedBar, duration + delay);
+    
 }
 
 function stackedBar() {
@@ -491,6 +506,7 @@ function stackedBar() {
         });
 
     setTimeout(transposeBar, duration + symbols[0].values.length * 10 + delay);
+   
 }
 
 function transposeBar() {
@@ -532,6 +548,7 @@ function transposeBar() {
         .attr("x2", w);
 
     setTimeout(donut, duration / 2 + symbols[0].values.length * 10 + delay);
+    
 }
 
 function donut() {
@@ -584,8 +601,16 @@ function donut() {
             text.attr("transform", "translate(" + arc.centroid(f) + ")translate(" + xx + "," + yy + ")rotate(" + ((f.startAngle + f.endAngle) / 2 + 3 * Math.PI / 2) * 180 / Math.PI + ")");
         };
     }
-
-    setTimeout(donutExplode, duration + delay);
+    $("#d3-show-reel-next-box").remove();
+    box = $("<div>").addClass("p6").attr("id", "d3-show-reel-next-box").append($("<button>").addClass("btn btn-primary").attr({ type: "button", id: "d3-show-reel-next" }).html('<i class="fa fa-play"></i>')).hide();
+    $("#e2d3-chart-area").prepend(box);
+    $(box).fadeIn(1000);
+    $(document).on("click", "#d3-show-reel-next", function () {
+        $("#d3-show-reel-next-box").remove();
+        setTimeout(donutExplode, 400);
+    })
+    
+  
 }
 
 function donutExplode() {
@@ -622,12 +647,13 @@ function donutExplode() {
             };
         }
     }
-
     setTimeout(function () {
         svg.selectAll("*").remove();
         svg.selectAll("g").data(symbols).enter().append("g").attr("class", "symbol");
         lines();
     }, duration);
+    
+
 }
 
 function showUpdate(data) {

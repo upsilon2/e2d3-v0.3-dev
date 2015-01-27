@@ -2,7 +2,6 @@
  * Created by yuuu on 14/12/22.
  */
 var bindSetting = { dimension: '2d' };
-var setBindId = e2d3BindId;
 
     var width = 550, size = width/5-10, padding = 15;
 
@@ -23,13 +22,25 @@ var yAxis = d3.svg.axis()
     .ticks(5);
 
 var color = d3.scale.category10();
-function e2d3Show(){
-    e2d3.bind2Json(setBindId, { dimension: '2d' }, show);
+function e2d3Show(updateFlag) {
+    if (updateFlag) {
+        e2d3.bind2Json(e2d3BindId, { dimension: '2d' }, show);
+    } else {
+        e2d3.addChangeEvent(e2d3BindId, e2d3Update, function () {
+            e2d3.bind2Json(e2d3BindId, { dimension: '2d' }, show);
+        });
+    }
+   
 }
-function e2d3Update(responce){
+function e2d3Update(responce) {
+    console.log("Begin e2d3Update");
+    e2d3Show(true);
 }
 
 function show(data) {
+    console.log("start show e");
+    $("#e2d3-chart-area").empty();
+
     var domainByTrait = {},
         traits = d3.keys(data[0]).filter(function (d,i) { return i !== 0; }),
         n = traits.length;

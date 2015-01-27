@@ -14,14 +14,16 @@
 </head>
 <body>
 <div id="e2d3-navi-header-area">
-    <div id="e2d3-chart-header"></div>
+    <div id="e2d3-chart-header">
+        <i class="a-pointer fa fa-2x fa-refresh e2d3-tooltip" style="color: #FFFFFF" id="e2d3-btn-redraw" data-toggle="tooltip" data-placement="right" title="Click when you change selected area"></i>
+    </div>
 </div>
 <div id="e2d3-global-navi">
-    <a href="index.html" style="color: #FFFFFF"><i class="fa fa-2x fa-home" title="Settings"></i></a>
+    <a class="a-pointer e2d3-link-index" style="color: #FFFFFF"><i class="fa fa-2x fa-home" title="Home"></i></a>
 </div>
 <div id="e2d3-chart-area" class="container-fluid"></div>
 <div id="e2d3-footer"><hr />Powered by E2D3.</div>
-<script src="js/core/e2d3.js" type="text/javascript"></script>
+    <script src="js/core/e2d3.js?0.3.2.4" type="text/javascript"></script>
 <script src="js/jquery/jquery.v2.min.js" type="text/javascript"></script>
 <script src="js/jquery/jquery.e2d3.js" type="text/javascript"></script>
 <script src="js/bs/bootstrap.v3.2.min.js" type="text/javascript"></script>
@@ -34,19 +36,25 @@
     var e2d3BindId = 'e2d3BindId';
     var e2d3BindData;
     var baseUrl;
+    var windowSize = $(window).width();
+    $(window).on("resize", function () {
+        windowSize = $(this).width();
+    });
+    var e2d3FlagDateStr = Date.now();
     /**
      * on load
      */
 //         init();
     $(document).ready(function(){
-        e2d3.initialize(function(){
+        e2d3.initialize(function () {
+            
             /**
              * check bind
              */
             try{
                 //console.log(e2d3BindId);
                 e2d3.getBindDataById(e2d3BindId,function(e2d3BindData){
-                    console.log('data is ');
+                    console.log('chart.html: Check binding is exist.');
                     console.log(e2d3BindData);
                     init(e2d3BindData);
                 });
@@ -58,40 +66,38 @@
         });
     });
     function init(bind) {
+        
         /**
          * Load script
          */
         var hash = location.hash.split('/');
-        console.log(hash);
         var demo = (hash[2] === 'demo') ? hash[2] : false;
-
+        console.log("is Demo : " + demo + ": hash : " + hash);
         var ul = $('<ul>').addClass('list-inline');
         $('#e2d3-chart-header').append(ul);
         if (hash[0] && demo) {
             baseUrl = 'contrib/' + hash[1];
             var sampleData;
-            d3.text(baseUrl + '/data.csv', function (csv) {
+            d3.text(baseUrl + '/data.csv?' + e2d3FlagDateStr, function (csv) {
                 var data = d3.csv.parseRows(csv);
-                console.log(data);
-                console.log(baseUrl);
+                console.log("Csv loaded.");
+                console.log(csv);
                 if (bind) {
+                    console.log("Begin is bind case.");
                     e2d3.releaseBindDataById({
                         id: e2d3BindId,
                         isDataDelete: true
                     }, function () {
-                        showError('セル「A1」を選択して、Drawボタンを押してください。　　　<a class="btn btn-default e2d3-button-draw">Draw</a>', { color: "danger", stay: true });
+                        showError('データをすべて削除し、セル「A1」を選択して、Drawボタンを押してください。　　　<a class="btn btn-default e2d3-button-draw">Draw</a>', { color: "danger", stay: true });
                         // data delete
                         $(document).on('click', ".e2d3-button-draw", function () {
-                            $(".e2d3-alert").delay(1000).fadeOut(600, function () {
-                                $(".e2d3-alert").remove();
-                            });
+                            $(".e2d3-alert").remove();
                             e2d3.json2Excel(data, function (result) {
                                 if (result) {
                                     e2d3.setBindData(
                                             { id: e2d3BindId, is_prompt: 0 }
                                             , function (binding) {
                                                 if (binding) {
-
                                                     e2d3GetMainScript(baseUrl,binding);
                                                 }
                                             });
@@ -100,6 +106,7 @@
                         });
                     });
                 } else {
+                    console.log("Begin is not bind case.");
                     e2d3.json2Excel(data, function (result) {
                         if (result) {
                             e2d3.setBindData(
@@ -107,29 +114,11 @@
                                     , function (binding) {
                                         if (binding) {
                                             e2d3GetMainScript(baseUrl,binding);
-
                                         }
                                     });
                         }
                     });
                 }
-            });
-
-            //redraw
-            var redraw = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-redraw");
-            var select = $("<button>").addClass("btn btn-primary btn-sm").attr("#e2d3-btn-select");
-            //$("#e2d3-navi-header-area").append($("<div>").addClass("text-center").append(select).append(redraw));
-            $(select).on('click', function () {
-                console.log('reselect data');
-                e2d3.setBindData(
-                        { id: e2d3BindId, is_prompt: 1 }
-                        , function (binding) {
-                            e2d3.addChangeEvent(binding, e2d3Update);
-                        });
-            });
-            $(redraw).on('click', function () {
-                console.log('redraw data');
-                show(e2d3BindData);
             });
 
         } else {
@@ -140,14 +129,29 @@
     }
 
     //
-    function e2d3GetMainScript(baseUrl,binding) {
-        $.getScript(baseUrl + '/main.js', function () {
+    function e2d3GetMainScript(baseUrl, binding) {
+        console.log("Begin main script.");
+        console.log(baseUrl);
+        $.getScript(baseUrl + '/main.js?123', function () {
+            console.log(baseUrl);
             $('<link/>', {
                 rel: 'stylesheet',
                 type: 'text/css',
                 href: baseUrl + '/main.css'
             }).appendTo('head');
-
+            $(document).on("click", ".e2d3-link-index", function () {
+                e2d3.removeChangeEvent(e2d3BindId, e2d3Update, function () {
+                    location.href = "index.html";
+                })
+            })
+            $(document).on('click', "#e2d3-btn-redraw", function () {
+                console.log('Begin redraw data');
+                e2d3.setBindData(
+                       { id: e2d3BindId, is_prompt: 0 }
+                       , function (binding) {
+                           e2d3Update();
+                       });
+            });
             e2d3Show();
         });
     }
