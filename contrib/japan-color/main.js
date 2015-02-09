@@ -80,6 +80,8 @@ function show(data) {
     console.log('show');
     if (data && topo.objects) {
         //max and slider labels
+        var minima = [];
+        var maxima = [];
         var labels = [];
         var values = []; // all of data;
         var data_row = 0;
@@ -89,6 +91,18 @@ function show(data) {
 
                 if (d[k] !== i && data_row !== 0) {
                     values.push(d[k]);
+                        
+                         if(minima[k] === undefined){
+                              minima[k] = d[k];
+                              maxima[k] = d[k];
+                         }else{
+                              if(minima[k] > d[k]){
+                                   minima[k] = d[k];
+                              }
+                              if(maxima[k] < d[k]){
+                                   maxima[k] = d[k];
+                              }
+                         }
                 } else if (d[k] !== i && data_row === 0) {
                     labels.push(k);
                     values.push(d[k]);
@@ -155,7 +169,7 @@ function show(data) {
             .on('mouseout', function () { return tooltip.style("visibility", "hidden"); })
             .transition()
             .attr("fill", function (d) {
-                return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor) : "#ffffff";
+                return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor,minima[initLabel],maxima[initLabel]) : "#ffffff";
             });
 
         if (!hasActive) {
@@ -196,7 +210,7 @@ function show(data) {
                 .on('mouseout', function () { return tooltip.style("visibility", "hidden"); })
                 .transition()
                 .attr("fill", function (d) {
-                    return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor) : "#ffffff";
+                    return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor,minima[initLabel],maxima[initLabel]) : "#ffffff";
                 });
         });
         //change color
@@ -210,7 +224,7 @@ function show(data) {
                 .data(topojson.feature(topo, topo.objects.japan).features)
                 .transition()
                 .attr("fill", function (d) {
-                    return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor) : "#ffffff"
+                    return (data[d.properties.nam_ja] && data[d.properties.nam_ja][initLabel] && !isNaN(+data[d.properties.nam_ja][initLabel])) ? color(data[d.properties.nam_ja][initLabel], values, selectedColor,minima[initLabel],maxima[initLabel]) : "#ffffff"
                 });
         });
     }
@@ -236,13 +250,11 @@ function makeLabels(labels, value) {
         jQuery('#e2d3-chart-area').append(box).hide().fadeIn();
     }
 }
-function color(d, values,selector) {
+function color(d, values,selector, min, max) {
     if (!selector) {
         var colorSelector = jQuery('.chart-color-selector-button');
         selector = colorSelector[0];
     }
-    var min = d3.min(values);
-    var max = d3.max(values);
     var c;
     if (!jQuery(selector).hasClass('multi')) {
         c = d3.scale.linear()
